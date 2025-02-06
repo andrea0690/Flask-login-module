@@ -1,0 +1,29 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <div class="container form">
+        <div class="container">
+            <span class="label laber-success"><a href="{{url_for('authentication.homepage')}}">Back to Homepage</a>
+            </span>
+        </div>
+        <h3> Scrapy Articles </h3>
+        {% if form %}
+            {{ form.hidden_tag() }}
+            {{ wtf.quick_form(form) }}
+        {%endif%}
+
+
+        {% if links %}
+            {% for text, url, image in links %}
+                <ul>
+                    <li>
+                        <img src="{{image}}" alt="" width="150" height="150">
+                        <a href="{{url}}" target="_blank">{{text}}</a>
+                    </li>
+                </ul>
+            {%endfor%}
+        {% endif %}
+
+    </div>
+
+    {% endblock content %}
