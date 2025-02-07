@@ -1,3 +1,4 @@
+from flask_wtf.file import FileField, FileAllowed
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, PasswordField,BooleanField
 from wtforms.validators import DataRequired,Length, Email, EqualTo, ValidationError
@@ -12,10 +13,16 @@ def email_exists(form, field):
 
 class RegistrationForm(FlaskForm):
     name = StringField("Name", validators= [DataRequired(),Length(4,16, message = "Between 4 to 16 characters")])
+    last_name = StringField("Last Name", validators= [DataRequired(),Length(4,16, message = "Between 4 to 16 characters")])
     email = StringField("E-mail", validators= [DataRequired(),Email(), email_exists])
     password = PasswordField("Password", validators=[DataRequired(), EqualTo("confirm", message = "Password must match!!!")])
     confirm = PasswordField("Confirm", validators=[DataRequired()])
+    # 📌 Nuevo campo para subir imagen (solo formatos permitidos)
+    profile_picture = FileField("Profile Picture", validators=[
+        FileAllowed(["jpg", "png", "jpeg"], "Only images are allowed!")
+    ])
     submit = SubmitField("Register")
+
 
 
 class LoginForm(FlaskForm):

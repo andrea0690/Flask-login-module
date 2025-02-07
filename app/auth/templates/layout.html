@@ -18,23 +18,29 @@
         <a class="navbar-brand" href="#"> Flask-Login-module</a>
         <ul class="nav">
             {% if current_user.is_authenticated %}
-            <li class="nav-item ">
-
-                <a class="nav-link active" href="{{url_for('authentication.log_out_user')}}"> logout Loged-in system as {{ current_user.user_name.title()}}</a>
-
-            </li>
-
+                <li class="nav-item ">
+                    <a class="nav-link active" href="{{url_for('authentication.log_out_user')}}"> logout Loged-in system as {{ current_user.user_name.title()}}</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                      <img
+                        src="{{url_for('authentication.get_uploaded_file', folder='profiles', filename=current_user.profile_picture)}}"
+                        class="user-image"
+                        alt="User Image"
+                        style="width: 35px; height: 35px;"
+                      />
+                      <span class="hidden-xs">{{current_user.user_name}}</span>
+                    </a>
+                </li>
             {% else %}
-            <li class="nav-item">
-                <a class="nav-link active" href="{{url_for('authentication.log_in_user')}}"> login</a>
-
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link" href="{{url_for('authentication.register_user')}}">Registrate</a>
-            </li>
-
+                <li class="nav-item">
+                    <a class="nav-link active" href="{{url_for('authentication.log_in_user')}}">login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url_for('authentication.register_user')}}">Registrate</a>
+                </li>
             {%endif%}
+
 
         </ul>
     </nav>

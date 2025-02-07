@@ -1,5 +1,7 @@
+import os
+from werkzeug.utils import secure_filename
 from pickle import GET
-from flask import render_template, flash, redirect, url_for
+from flask import current_app, render_template, flash, redirect, send_from_directory, url_for
 from app.auth.forms import RegistrationForm, LoginForm, ScrapyForm
 from app.auth import authentication
 from app.auth.models import User
@@ -18,13 +20,27 @@ def register_user():
     form = RegistrationForm()
 
     if form.validate_on_submit():
-        User.create_user(
-            user = form.name.data,
+
+        # 📌 Guardar la imagen de perfil si se ha subido
+        if form.profile_picture.data:
+            filename = secure_filename(form.profile_picture.data.filename)  # Asegurar el nombre del archivo
+            image_path = os.path.join(current_app.config['UPLOAD_FOLDER'], 'profiles', filename)  
+            form.profile_picture.data.save(image_path)  # Guardar la imagen en el servidor
+            image_url = filename # Ruta relativa para guardarla en la BD
+        else:
+            image_url = None  # Si no subió imagen, guardamos None
+
+        user = User.create_user(
+            name = form.name.data,
+            last_name = form.last_name.data,
             email = form.email.data,
-            password = form.password.data
+            password = form.password.data,
+            profile_picture = image_url # Pasamos la ruta de la imagen
         )
         flash("Registration Done...")
-        return redirect(url_for("authentication.log_in_user"))
+        login_user(user, remember=False)
+        return redirect(url_for("authentication.homepage"))
+        # return redirect(url_for("authentication.log_in_user"))
     
     return render_template("registration.html", form=form)
 
@@ -104,4 +120,8 @@ def scrapy_data():
 def page_not_found(error):
     return render_template('404.html'),404
 
-
+@authentication.route('/uploads/<folder>/<filename>')
+@login_required
+def get_uploaded_file(folder, filename):
+    path = os.path.join(current_app.config['UPLOAD_FOLDER'], folder)
+    return send_from_directory(path, filename)
